@@ -23,6 +23,9 @@ app.use(express.json()); // middleware to enable posting json
 app.get('/api/articles/:name', async (req, res) => {
   const { name } = req.params;
   const client = new MongoClient('mongodb://127.0.0.1:27017');
+  // const client = new MongoClient('mongodb://localhost:27017');
+  // const client = new MongoClient('mongodb://172.26.169.37:27017'); 
+  // mongodb://localhost:27017/?readPreference=primary&ssl=false&directConnection=true
   await client.connect();
 
   const db = client.db('react-blog-db');
