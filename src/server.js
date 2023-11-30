@@ -31,19 +31,14 @@ app.use(express.json()); // middleware to enable posting json
 
 app.get('/api/articles/:name', async (req, res) => {
   const { name } = req.params;
-  // const client = new MongoClient('mongodb://127.0.0.1:27017');
+  const client = new MongoClient('mongodb://127.0.0.1:27017');
   // const client = new MongoClient('mongodb://localhost:27017');
   // const client = new MongoClient('mongodb://172.26.169.37:27017'); 
   // mongodb://localhost:27017/?readPreference=primary&ssl=false&directConnection=true
 
 
   const article = await db.collection('articles').findOne({ name });
-  if (article) {
-    res.json(article);
-  } else {
-    res.sendStatus(404);
-  }
-  
+  res.json(article);
 });
 
 // app.post('/hello', (req, res) => {
@@ -66,9 +61,8 @@ app.put("/api/articles/:name/upvote", async (req, res) => {
   const article = await db.collection('articles').findOne({name});
 
   if (article) {
-    // article.upvotes += 1; Not needed since the count is also happening above in inc
-    // res.send(`The ${name} article now has ${article.upvotes} upvotes`);
-    res.json(article);
+    article.upvotes += 1;
+    res.send(`The ${name} article now has ${article.upvotes} upvotes`);
   } else {
     res.send("That article doesn't exist");
   }
@@ -85,18 +79,13 @@ app.post("/api/articles/:name/comments", async (req, res) => {
   const article = await db.collection('articles').findOne({name});
 
   if (article) {
-    // article.comments.push({ postedBy, text });
-    res.json(article);
+    article.comments.push({ postedBy, text });
+    res.send(article.comments);
   } else {
     res.send("That article doesn't exist");
   }
 });
 
-connectToDb(()=> {
-  console.log('successfully connected to database!');
-  app.listen(8000, () => {
-    console.log("Server is listening on port 8000");
-  });
-})
-
-
+app.listen(8000, () => {
+  console.log("Server is listening on port 8000");
+});
