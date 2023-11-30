@@ -31,14 +31,19 @@ app.use(express.json()); // middleware to enable posting json
 
 app.get('/api/articles/:name', async (req, res) => {
   const { name } = req.params;
-  const client = new MongoClient('mongodb://127.0.0.1:27017');
+  // const client = new MongoClient('mongodb://127.0.0.1:27017');
   // const client = new MongoClient('mongodb://localhost:27017');
   // const client = new MongoClient('mongodb://172.26.169.37:27017'); 
   // mongodb://localhost:27017/?readPreference=primary&ssl=false&directConnection=true
 
 
   const article = await db.collection('articles').findOne({ name });
-  res.json(article);
+  if (article) {
+    res.json(article);
+} else {
+    res.sendStatus(404);
+}
+
 });
 
 // app.post('/hello', (req, res) => {
@@ -86,6 +91,10 @@ app.post("/api/articles/:name/comments", async (req, res) => {
   }
 });
 
-app.listen(8000, () => {
-  console.log("Server is listening on port 8000");
+
+connectToDb(() => {
+  console.log('Successfully connected to database!');
+  app.listen(8000, () => {
+      console.log('Server is listening on port 8000');
+  });
 });
