@@ -2,8 +2,9 @@ import fs from "fs";
 import path from "path";
 import admin from "firebase-admin";
 import express from "express";
+import "dotenv/config";
 import { db, connectToDb } from "./db.js";
-import 'dotenv/config';
+
 
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
@@ -31,11 +32,11 @@ admin.initializeApp({
 
 const app = express();
 app.use(express.json()); // middleware to enable posting json
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, "../build")));
 
 app.get(/^(?!\/api).+/, (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/index.html'));
-})
+  res.sendFile(path.join(__dirname, "../build/index.html"));
+});
 
 app.use(async (req, res, next) => {
   const { authtoken } = req.headers;
@@ -54,9 +55,10 @@ app.use(async (req, res, next) => {
 
 app.get("/api/articles/:name", async (req, res) => {
   const { name } = req.params;
-
   const { uid } = req.user;
+
   const article = await db.collection("articles").findOne({ name });
+
   if (article) {
     const upvoteIds = article.upvoteIds || [];
     article.canUpvote = uid && !upvoteIds.includes(uid);
@@ -65,16 +67,6 @@ app.get("/api/articles/:name", async (req, res) => {
     res.sendStatus(404);
   }
 });
-
-// app.post('/hello', (req, res) => {
-//     console.log(req.body);
-//     res.send(`Howdy! ${req.body.name}`);
-// });
-
-// app.get('/hello/:name', (req, res) => {
-//     const {name} = req.params;
-//     res.send (`Hello ${name}`)
-// })
 
 app.use((req, res, next) => {
   if (req.user) {
@@ -87,7 +79,6 @@ app.use((req, res, next) => {
 app.put("/api/articles/:name/upvote", async (req, res) => {
   const { name } = req.params;
   const { uid } = req.user;
-  // const article = articleInfo.find((a) => a.name === name);
 
   const article = await db.collection("articles").findOne({ name });
   if (article) {
@@ -107,8 +98,7 @@ app.put("/api/articles/:name/upvote", async (req, res) => {
     const updatedArticle = await db.collection("articles").findOne({ name });
 
     res.json(updatedArticle);
-    // article.upvotes += 1;
-    res.json(article);
+
   } else {
     res.send("That article doesn't exist");
   }
@@ -118,7 +108,7 @@ app.post("/api/articles/:name/comments", async (req, res) => {
   const { name } = req.params;
   const { text } = req.body;
   const { email } = req.user;
-  // const article = articleInfo.find((a) => a.name === name);
+
 
   await db.collection("articles").updateOne(
     { name },
