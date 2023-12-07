@@ -1,5 +1,5 @@
 includes:
  - prod-env.yaml
 runtime: nodejs20
-build_env_variables:
-  GOOGLE_NODE_RUN_SCRIPTS: ''
+# build_env_variables:
+#   GOOGLE_NODE_RUN_SCRIPTS: ''
